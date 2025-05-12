@@ -1,3 +1,6 @@
+%% @author Miau da Silva
+%% @doc Programa aleatório.
+%% @reference From my mama.
 -module(app).
 -export([sum/2, fall_velocity/1, sum_and_divide/2]).
 -import(other, [divide/2]).
