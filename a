@@ -1,0 +1,67 @@
+
+cria_tabela_leal_cad_interacao_simulacao(Context) ->
+    case z_db:table_exists(leal_cad_interacao_simulacao, Context) of
+        false ->
+            z_db:create_table(leal_cad_interacao_simulacao, [
+                #column_def{name = id, type = "serial", is_nullable = false, primary_key = true},
+                #column_def{name=leal_usr_cliente_id, type="integer"},
+                #column_def{name=leal_cad_atendimento_interacao_id, type="integer"},
+                #column_def{name=leal_cidade_id, type="integer"},
+                #column_def{name=valor_imovel, type="numeric(11,2)"},
+                #column_def{name=valor_entrada, type="numeric(11,2)"},
+                #column_def{name=data_nasc, type="date"},
+                #column_def{name=tipo_imovel, type="varchar"},
+                #column_def{name=possui_imovel, type="bool"},
+                #column_def{name=portabilidade, type="bool"},
+                #column_def{name=renda_familiar, type="numeric(11,2)"},
+                #column_def{name=beneficiado_fgts, type="bool"},
+                #column_def{name=multiplos_compradores, type="bool"},
+                #column_def{name=fgts_3anos, type="bool"},
+                #column_def{name=prazo_financiamento, type="integer"}, %% prazo financiamento em meses
+                #column_def{name=leal_lead_id, type="integer"},
+                #column_def{name=updated_by_leal_multitenant_usr_id, type="integer"},
+                #column_def{name=inserted_by_leal_multitenant_usr_id, type="integer"},
+                #column_def{name=updated_at, type="timestamptz"},
+                #column_def{name=inserted_at, type="timestamptz"}
+            ], Context);
+        true -> ok
+    end.
+
+alter_tabela_leal_cad_interacao_simulacao(Context)->
+    sl_db:q("ALTER TABLE leal_cad_interacao_simulacao ADD CONSTRAINT fk_leal_usr_cliente_id FOREIGN KEY (leal_usr_cliente_id)
+    REFERENCES leal_usr_multitenant(id)", Context),
+    sl_db:q("ALTER TABLE leal_cad_interacao_simulacao ADD CONSTRAINT fk_updated_by_leal_multitenant_usr_id FOREIGN KEY(updated_by_leal_multitenant_usr_id)
+                    references leal_multitenant_usr(id)", Context),
+    sl_db:q("ALTER TABLE leal_cad_interacao_simulacao ADD CONSTRAINT fk_inserted_by_leal_multitenant_usr_id FOREIGN KEY(inserted_by_leal_multitenant_usr_id)
+                    references leal_multitenant_usr(id)", Context),
+    sl_db:q("ALTER TABLE leal_cad_interacao_simulacao ADD CONSTRAINT fk_leal_lead_id FOREIGN KEY (leal_lead_id)
+    REFERENCES leal_lead(id)", Context),
+    sl_db:q("ALTER TABLE leal_cad_interacao_simulacao ADD CONSTRAINT fk_leal_cidade_id FOREIGN KEY (leal_cidade_id)
+        REFERENCES leal_cidade(id)", Context),
+    sl_db:q("ALTER TABLE leal_cad_interacao_simulacao ADD CONSTRAINT fk_leal_cad_atendimento_interacao_id FOREIGN KEY (leal_cad_atendimento_interacao_id)
+            REFERENCES leal_cad_atendimento_interacao(id)", Context).
+
+
+cria_tabela_leal_cad_interacao_simulacao_resposta(Context) ->
+    case z_db:table_exists(leal_cad_interacao_simulacao_resposta, Context) of
+        false ->
+            z_db:create_table(leal_cad_interacao_simulacao_resposta, [
+                #column_def{name=id, type="serial", is_nullable = false, primary_key = true},
+                #column_def{name=leal_cad_interacao_simulacao_id, type="integer"},
+                #column_def{name=valor_total, type="numeric(11,2)"},
+                #column_def{name=valor_entrada, type="numeric(11,2)"},
+                #column_def{name=taxa_juros, type="varchar(10)"},
+                #column_def{name=prazo, type="integer"},
+                #column_def{name=sistema_amortizacao, type="varchar(300)"},
+                #column_def{name=nome_opcao, type="varchar(30)"},
+                #column_def{name=datahora, type="timestamptz"},
+                #column_def{name=leal_if_id, type="integer"}
+            ], Context);
+        true -> ok
+    end.
+
+alter_tabela_leal_cad_interacao_simulacao_resposta(Context) ->
+    sl_db:q("ALTER TABLE leal_cad_interacao_simulacao_resposta ADD CONSTRAINT fk_leal_cad_interacao_simulacao_id FOREIGN KEY (leal_cad_interacao_simulacao_id)
+    REFERENCES leal_cad_interacao_simulacao(id)", Context),
+    sl_db:q("ALTER TABLE leal_cad_interacao_simulacao_resposta ADD CONSTRAINT fk_leal_if_id FOREIGN KEY (leal_if_id)
+    REFERENCES leal_if(id)", Context).
